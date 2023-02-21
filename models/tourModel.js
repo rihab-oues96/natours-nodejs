@@ -18,12 +18,12 @@ const tourSchema = new mongoose.Schema(
 
     duration: {
       type: Number,
-      required: [true, ' a tour must have a duration']
+      required: [true, ' a tour must have a duration'],
     },
 
     maxGroupSize: {
       type: Number,
-      required: [true, ' atour must have a groupe size']
+      required: [true, ' atour must have a groupe size'],
     },
 
     difficulty: {
@@ -31,51 +31,51 @@ const tourSchema = new mongoose.Schema(
       required: [true, 'a tour should have difficulty'],
       enum: {
         values: ['easy', 'medium', 'difficult'],
-        message: 'difficulty is either: easy, medium, difficult'
-      }
+        message: 'difficulty is either: easy, medium, difficult',
+      },
     },
 
     ratingsAverage: {
       type: Number,
       default: 4.5,
       min: [1, 'rating must be above 1.0'],
-      max: [5, 'rating must be below 5.0']
+      max: [5, 'rating must be below 5.0'],
     },
 
     ratingsQuantity: {
       type: Number,
-      default: 0
+      default: 0,
     },
 
     price: {
       type: Number,
-      required: [true, 'a tour must have a price']
+      required: [true, 'a tour must have a price'],
     },
 
     priceDiscount: {
       type: Number,
       validate: {
-        validator: function(val) {
+        validator: function (val) {
           return val < this.price;
         },
-        message: 'discount price ({VALUE}) should be below regular price'
-      }
+        message: 'discount price ({VALUE}) should be below regular price',
+      },
     },
 
     summary: {
       type: String,
       required: [true, 'a tour must have a duration'],
-      trim: true
+      trim: true,
     },
 
     description: {
       type: String,
-      trim: true
+      trim: true,
     },
 
     imageCover: {
       type: String,
-      required: [true, ' a tour must have a cover image ']
+      required: [true, ' a tour must have a cover image '],
     },
 
     images: [String],
@@ -83,20 +83,20 @@ const tourSchema = new mongoose.Schema(
     createdAt: {
       type: Date,
       default: Date.now(),
-      select: false
+      select: false,
     },
 
     startDates: [Date],
 
     secretTour: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 
-tourSchema.virtual('durationWeeks').get(function() {
+tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
@@ -115,19 +115,19 @@ tourSchema.virtual('durationWeeks').get(function() {
 //   next();
 // });
 
-tourSchema.pre(/^find/, function(next) {
+tourSchema.pre(/^find/, function (next) {
   this.find({ secretTour: { $ne: true } });
   this.start = Date.now();
   next();
 });
 
-tourSchema.post(/^find/, function(docs, next) {
+tourSchema.post(/^find/, function (docs, next) {
   console.log(`Query took ${Date.now() - this.start} milliseconds!`);
   next();
 });
 
 //aggregation middleware
-tourSchema.pre('aggregate', function(next) {
+tourSchema.pre('aggregate', function (next) {
   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
   console.log(this.pipeline());
   next();

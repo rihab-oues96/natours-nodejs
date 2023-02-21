@@ -1,8 +1,14 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const app = require('./app');
+
+process.on('uncaughtException', (err) => {
+  console.log('uncaught exeption !  Shutting down...');
+  console.log(err.name, err.message);
+  process.exit(1);
+});
 
 dotenv.config({ path: './config.env' });
+const app = require('./app');
 
 const DB = process.env.DATABASE.replace(
   '<PASSWORD>',
@@ -11,14 +17,18 @@ const DB = process.env.DATABASE.replace(
 
 // connect app width database throw mongoose
 mongoose
-  .connect(DB, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-  })
+  .connect(DB, {})
   .then((con) => console.log('DB connections successful'));
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`app running on port ${port}...`);
+});
+
+process.on('unhandledRejection', (err) => {
+  console.log('unhandled rejection!   Shutting down...');
+  console.log(err.name, err.message);
+  server.close(() => {
+    process.exit(1);
+  });
 });
