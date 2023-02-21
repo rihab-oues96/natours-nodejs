@@ -14,9 +14,9 @@ mongoose
   .connect(DB, {
     useNewUrlParser: true,
     useCreateIndex: true,
-    useFindAndModify: false
+    useFindAndModify: false,
   })
-  .then(con => console.log('DB connections successful'));
+  .then((con) => console.log('DB connections successful'));
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
