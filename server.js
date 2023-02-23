@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
 process.on('uncaughtException', (err) => {
-  console.log('uncaught exeption !  Shutting down...');
+  console.log('uncaughtExecption!  Shutting down...');
   console.log(err.name, err.message);
   process.exit(1);
 });
@@ -16,8 +16,9 @@ const DB = process.env.DATABASE.replace(
 );
 
 // connect app width database throw mongoose
+mongoose.set('strictQuery', false);
 mongoose
-  .connect(DB, {})
+  .connect(DB)
   .then((con) => console.log('DB connections successful'));
 
 const port = process.env.PORT || 3000;
